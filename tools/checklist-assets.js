@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
   'use strict';
   var BASE='/Miracle-archive/',rootHandle=null,folderHandle=null,parts=[],nextNumber=1,kind='checklist';
   function $(id){return document.getElementById(id)}

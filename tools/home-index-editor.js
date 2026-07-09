@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   'use strict';
   var KEY = 'Miracle-home-index-editor-v1';
   var defaults = [

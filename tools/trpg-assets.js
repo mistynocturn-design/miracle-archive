@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   'use strict';
 
   var SITE_BASE = '/Miracle-archive/';

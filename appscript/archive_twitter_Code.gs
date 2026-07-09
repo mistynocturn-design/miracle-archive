@@ -1,4 +1,4 @@
-﻿var BACKUP_API = {
+var BACKUP_API = {
   VERSION: '2026-06-21.1',
   ARCHIVE_SHEET: 'Archive',
   TWITTER_SHEET: 'Twitter',
