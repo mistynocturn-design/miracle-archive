@@ -1,10 +1,10 @@
 ---
-title: "미라클 - 맥주뼝"
+title: "미라클 - 맥주뼝 님"
 date: "2026-07-10"
 category: "Commission"
-artist: "불명"
+artist: "맥주뼝"
 characters: []
-tags: ["mimi. clark"]
+tags: ["mimi","clark"]
 description: ""
 images:
   - "/miracle-archive/assets/commission/5(1)-맥주뼝.jpg"
