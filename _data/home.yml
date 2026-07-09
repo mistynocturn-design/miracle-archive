@@ -1,0 +1,53 @@
+﻿hero_image: ""
+hero_position: "50% 50%"
+hero_crop_x: 50
+hero_crop_y: 50
+hero_crop_zoom: 1
+hero_gradient: true
+hero_gradient_color: "#575757"
+hero_gradient_opacity: 23
+hero_copy_scale: 95
+hero_text_position: "top-left"
+kicker_color: "#ffffff"
+title_color: "#ffffff"
+subtitle_color: "#ffffff"
+archive_color: "#ffffff"
+kicker: "PRIVATE ARCHIVE"
+title: "Miracle"
+subtitle: ""
+archive_since: "ARCHIVE SINCE 2026"
+accent: "#685867"
+soft: "#eee8e5"
+ink: "#29272e"
+Clark_note: ""
+Mimi_note: ""
+featured_characters: []
+archive_index:
+  - title: "CHARACTERS"
+    url: "/characters/"
+    description: "Character profiles"
+  - title: "ARCHIVE"
+    url: "/archive/"
+    description: "Messages and records"
+  - title: "WORLD"
+    url: "/world/"
+    description: "World settings"
+  - title: "ROLEPLAY"
+    url: "/roleplay/"
+    description: "Roleplay workspace"
+  - title: "GALLERY"
+    url: "/gallery/"
+    description: "Visual archive"
+  - title: "WRITINGS"
+    url: "/writings/"
+    description: "Stories and notes"
+  - title: "TWITTER"
+    url: "/twitter/"
+    description: "Timeline archive"
+  - title: "TRPG"
+    url: "/trpg/"
+    description: "Session logs"
+  - title: "Pair/Check"
+    url: "/checklist/"
+    description: "Pair and checklist records"
+

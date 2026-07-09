@@ -1,0 +1,148 @@
+---
+layout: default
+---
+
+<article class="chatlog-page" style="--chat-page-bg: {{ page.colors.page | default: '#ffffff' }}; --chat-left-bg: {{ page.colors.left | default: '#f1f3f5' }}; --chat-right-bg: {{ page.colors.right | default: '#dbeafe' }}; --chat-left-text: {{ page.colors.left_text | default: page.colors.text | default: '#212529' }}; --chat-right-text: {{ page.colors.right_text | default: page.colors.text | default: '#212529' }}; --chat-meta-color: {{ page.colors.meta | default: '#8a8a8a' }}; --chat-font-size: {{ page.bubble_font_size | default: '0.86rem' }};">
+  <a class="detail-back-link" href="{{ site.baseurl }}/archive/">← Archive</a>
+  <header class="chatlog-header">
+    <p class="chatlog-category">{{ page.category }}</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.date %}
+      <p class="chatlog-date">{{ page.date | date: "%Y-%m-%d" }}</p>
+    {% endif %}
+  </header>
+
+  <script type="text/plain" class="chat-source">{{ content }}</script>
+  <section class="chatlog-body" aria-label="{{ page.title }} chat log"></section>
+</article>
+
+<script>
+(function () {
+  var page = document.currentScript.previousElementSibling;
+  while (page && !page.classList.contains('chatlog-page')) {
+    page = page.previousElementSibling;
+  }
+  if (!page) return;
+
+  var source = page.querySelector('.chat-source');
+  var body = page.querySelector('.chatlog-body');
+  if (!source || !body) return;
+
+  var raw = source.textContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  raw = raw.replace(/\t+$/gm, '');
+  raw = raw.replace(/\t+"?((?:>>|<<)[\t ]+)/g, '\n"$1');
+  raw = raw.replace(/("(?:>>|<<)[\t ]+)/g, '\n$1');
+
+  var lines = raw.split('\n');
+  var imagePattern = /^\s*"?!\[[^\]]*\]\(([^)]+)\)"?\s*$/;
+  var datePattern = /^\s*"?==\s*(.+?)\s*=="?\s*$/;
+  var rightPattern = /^\s*("?)>>[\t ]+(.*)$/;
+  var leftPattern = /^\s*("?)<<[\t ]+(.*)$/;
+  var current = null;
+
+  function normalizeSpreadsheetText(text) {
+    return text
+      .replace(/[\t ]+$/g, '')
+      .replace(/""/g, '"');
+  }
+
+  function cleanFirstLine(text, markerWasQuoted) {
+    var cleaned = normalizeSpreadsheetText(text);
+    var wrapped = markerWasQuoted || /^"/.test(cleaned);
+    if (/^"/.test(cleaned)) cleaned = cleaned.replace(/^"/, '');
+    return { text: cleaned, wrapped: wrapped };
+  }
+
+  function removeClosingSpreadsheetQuote(target) {
+    if (!target || !target.wrapped) return;
+    for (var i = target.text.length - 1; i >= 0; i--) {
+      if (target.text[i].trim() === '') continue;
+      target.text[i] = target.text[i].replace(/"$/, '');
+      break;
+    }
+  }
+
+  function appendText(target, text) {
+    var cleaned = normalizeSpreadsheetText(text);
+    if (!cleaned && target.text.length === 0) return;
+    target.text.push(cleaned);
+  }
+
+  function flush() {
+    if (!current) return;
+    removeClosingSpreadsheetQuote(current);
+
+    var line = document.createElement('div');
+    line.className = 'chat-line ' + current.side;
+
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+
+    var text = current.text.join('\n').trim();
+    if (text) {
+      var textEl = document.createElement('div');
+      textEl.className = 'chat-text';
+      textEl.innerHTML = text.replace(/\n/g, '<br>');
+      bubble.appendChild(textEl);
+    }
+
+    current.images.forEach(function (src) {
+      var img = document.createElement('img');
+      img.className = 'chat-image';
+      img.src = src;
+      img.alt = '';
+      bubble.appendChild(img);
+    });
+
+    line.appendChild(bubble);
+    body.appendChild(line);
+    current = null;
+  }
+
+  function addDate(label) {
+    var divider = document.createElement('div');
+    divider.className = 'chat-date-divider';
+    divider.textContent = label;
+    body.appendChild(divider);
+  }
+
+  lines.forEach(function (line) {
+    var normalizedLine = normalizeSpreadsheetText(line);
+    var dateMatch = normalizedLine.match(datePattern);
+    var rightMatch = normalizedLine.match(rightPattern);
+    var leftMatch = normalizedLine.match(leftPattern);
+    var imageMatch = normalizedLine.match(imagePattern);
+
+    if (dateMatch) {
+      flush();
+      addDate(dateMatch[1]);
+      return;
+    }
+
+    if (rightMatch || leftMatch) {
+      var match = rightMatch || leftMatch;
+      var first = cleanFirstLine(match[2], !!match[1]);
+      flush();
+      current = {
+        side: rightMatch ? 'right' : 'left',
+        text: [],
+        images: [],
+        wrapped: first.wrapped
+      };
+      appendText(current, first.text);
+      return;
+    }
+
+    if (imageMatch && current) {
+      current.images.push(imageMatch[1]);
+      return;
+    }
+
+    if (current) {
+      appendText(current, line);
+    }
+  });
+
+  flush();
+})();
+</script>

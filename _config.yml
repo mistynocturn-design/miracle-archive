@@ -1,0 +1,53 @@
+﻿# Dependencies
+markdown:         kramdown
+highlighter:      rouge
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Miracle
+tagline:          ''
+description:      'Private character archive'
+baseurl: "/miracle-archive"
+url: https://mistynocturn-design.github.io
+timezone: Asia/Seoul
+
+paginate:         5
+
+# Custom vars
+version:          1.0.0
+
+github:
+  repo:           https://github.com/mistynocturn-design/miracle-archive
+
+# Site collections
+collections:
+  characters:
+    output: true
+    permalink: /characters/:name/
+  twitter:
+    output: true
+    permalink: /twitter/:name/
+  archive:
+    output: true
+    permalink: /archive/:name/
+  roleplays:
+    output: true
+    permalink: /roleplay/:name/
+  character_aus:
+    output: true
+    permalink: /character-au/:name/
+  gallery:
+    output: false
+  writings:
+    output: true
+    permalink: /writings/:name/
+  trpg:
+    output: true
+    permalink: /trpg/:name/
+  world_aus:
+    output: true
+    permalink: /world/alternates/:name/
+  checklists:
+    output: false
