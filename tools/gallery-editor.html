@@ -11,7 +11,7 @@
 <body>
 <main>
   <h1>Gallery Editor</h1>
-  <details class="guide"><summary>사용방법</summary><ol><li>이미지를 repo의 <code>assets/gallery/작품폴더/</code>에 먼저 넣습니다.</li><li>작품 정보와 이미지 경로를 입력하고 Add image로 묶음에 추가합니다.</li><li>Current images에서 순서를 바꾸거나 삭제하고 Preview를 확인합니다.</li><li>Save draft는 이 브라우저에만 임시 저장합니다.</li><li>완성된 Markdown을 Download한 뒤 repo의 <code>_gallery</code> 폴더에 넣고 Commit/Push합니다.</li></ol></details>
+  <details class="guide"><summary>사용방법</summary><ol><li>이미지를 repo의 <code>assets/카테고리/</code> 또는 <code>assets/gallery/작품폴더/</code>에 먼저 넣습니다.</li><li>작품 정보와 이미지 경로를 입력하고 Add image로 묶음에 추가합니다.</li><li>Current images에서 순서를 바꾸거나 삭제하고 Preview를 확인합니다.</li><li>Save draft는 이 브라우저에만 임시 저장합니다.</li><li>완성된 Markdown을 Download한 뒤 repo의 <code>_gallery</code> 폴더에 넣고 Commit/Push합니다.</li></ol></details>
   <div class="layout">
     <div>
       <section class="panel"><h2>Artwork</h2><div class="grid">
@@ -21,7 +21,7 @@
         <label class="wide">Description<textarea id="description"></textarea></label><label>File name<input id="fileName" placeholder="2026-06-artwork.md"></label><label>Draft name<input id="draftName"></label>
         <label class="wide">Saved drafts<select id="draftSelect"></select></label>
       </div><div class="actions"><button id="saveDraft" type="button">Save draft</button><button id="loadDraft" class="secondary" type="button">Load selected</button><button id="clearForm" class="secondary" type="button">Clear</button><button id="deleteDraft" class="danger" type="button">Delete selected</button></div><div class="status" id="draftStatus"></div></section>
-      <section class="panel"><h2>Images</h2><label>Repo image path<input id="imagePath" placeholder="C:\Users\yooji\Documents\miracle-archive\assets\gallery\Noctea\01.jpg"></label><div class="actions"><button id="addImage" type="button">Add image</button></div><div class="status" id="imageStatus"></div><div class="image-list" id="imageList"></div><p class="small">Windows 전체 경로, assets/gallery/... 상대 경로, 기존 사이트 경로를 모두 입력할 수 있습니다. 저장할 때 /miracle-archive/assets/gallery/... 로 자동 변환됩니다.</p></section>
+      <section class="panel"><h2>Images</h2><label>Repo image path<input id="imagePath" placeholder="C:\Users\yooji\Documents\miracle-archive\assets\gallery\Noctea\01.jpg"></label><div class="actions"><button id="addImage" type="button">Add image</button></div><div class="status" id="imageStatus"></div><div class="image-list" id="imageList"></div><p class="small">Windows 전체 경로, assets/... 상대 경로, 기존 사이트 경로를 모두 입력할 수 있습니다. 저장할 때 /miracle-archive/assets/... 로 자동 변환됩니다.</p></section>
       <section class="panel"><h2>Output</h2><textarea class="output" id="output" spellcheck="false"></textarea><div class="actions"><button id="copy" type="button">Copy Markdown</button><button id="download" class="secondary" type="button">Download .md</button></div><div class="status" id="status"></div></section>
     </div>
     <aside class="preview-wrap"><section class="preview"><h2>Preview</h2><div id="preview"></div></section></aside>
@@ -37,17 +37,17 @@
   function yaml(value){return JSON.stringify(String(value==null?'':value))}function list(value){return String(value||'').split(',').map(function(x){return x.trim()}).filter(Boolean)}
   function slug(value){return String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'gallery-item'}
   function repoImagePath(value){
-    var path=String(value||'').trim().replace(/^['"]|['"]$/g,'').replace(/[\\₩]+/g,'/');
+    var path=String(value||'').trim().replace(/^['"]|['"]$/g,'').replace(/[\\\u20A9]+/g,'/');
     path=path.replace(/^file:\/+/i,'/');
-    var marker=path.toLowerCase().indexOf('/assets/gallery/');
-    if(marker<0&&path.toLowerCase().indexOf('assets/gallery/')===0)marker=-1;
+    var lower=path.toLowerCase();
+    var marker=lower.indexOf('/assets/');
     if(marker>=0)path=path.slice(marker+1);
-    else if(path.toLowerCase().indexOf('assets/gallery/')!==0)throw new Error('repo의 assets/gallery 폴더 안에 있는 이미지 경로를 입력해주세요.');
-    path=path.replace(/^\/+/, '').replace(/\/{2,}/g,'/');
+    else if(lower.indexOf('assets/')!==0)throw new Error('repo의 assets 폴더 안에 있는 이미지 경로를 입력해주세요. 예: assets/noctea/1.jpg 또는 assets/gallery/noctea/1.jpg');
+    path=path.replace(/^\/+/,'').replace(/\/{2,}/g,'/');
     if(path.split('/').some(function(part){return part==='..'}))throw new Error('상위 폴더(..)가 포함된 경로는 사용할 수 없습니다.');
+    if(!/\.(jpe?g|png|gif|webp|avif)$/i.test(path))throw new Error('이미지 파일 확장자를 확인해주세요. jpg, png, gif, webp, avif를 사용할 수 있습니다.');
     return '/miracle-archive/'+path;
-  }
-  function meta(){var out={};ids.forEach(function(id){out[id]=val(id)});return out}
+  }  function meta(){var out={};ids.forEach(function(id){out[id]=val(id)});return out}
   function build(){var m=meta(),lines=['---','title: '+yaml(m.title),'date: '+yaml(m.date),'category: '+yaml(m.category),'artist: '+yaml(m.artist),'characters: '+JSON.stringify(list(m.characters)),'tags: '+JSON.stringify(list(m.tags)),'description: '+yaml(m.description),'images:'];images.forEach(function(path){lines.push('  - '+yaml(path))});lines.push('---','');el('output').value=lines.join('\n');return (m.fileName||slug(m.title)+'.md').replace(/\.md$/,'')+'.md'}
   function renderList(){el('imageList').innerHTML=images.length?images.map(function(path,index){return '<div class="image-item"><img src="'+esc(path)+'" alt=""><span>'+esc(path)+'</span><span class="image-actions"><button type="button" data-action="up" data-index="'+index+'">↑</button><button type="button" data-action="down" data-index="'+index+'">↓</button><button type="button" data-action="edit" data-index="'+index+'">Edit</button><button type="button" data-action="remove" data-index="'+index+'">×</button></span></div>'}).join(''):'<p class="small">No images yet.</p>'}
   function renderPreview(){var m=meta(),shown=images.slice(0,4),count=images.length>4?'many':Math.max(1,images.length);el('preview').innerHTML='<div class="preview-card"><div class="collage count-'+count+'">'+shown.map(function(path){return '<img src="'+esc(path)+'" alt="">'}).join('')+(images.length>4?'<span class="more">+'+(images.length-4)+'</span>':'')+'</div><div class="preview-meta"><strong>'+esc(m.title||'Artwork title')+'</strong><span>'+esc(m.date)+(m.artist?' · '+esc(m.artist):'')+'</span></div></div><div class="preview-description">'+esc(m.description)+'</div>'}
