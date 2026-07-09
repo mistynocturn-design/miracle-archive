@@ -1,0 +1,11 @@
+---
+title: "트레틀"
+date: "2026-07-09"
+category: "Noctea"
+artist: "녹티"
+characters: []
+tags: ["clark","mimi"]
+description: ""
+images:
+  - "/miracle-archive/assets/noctea/19-트레틀.jpg"
+---
